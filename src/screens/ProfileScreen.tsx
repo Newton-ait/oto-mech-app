@@ -235,7 +235,7 @@ export default function ProfileScreen() {
         </View>
         <TouchableOpacity style={s.settingItem} onPress={handleGroqKey}>
           <Text style={s.settingLbl}>🤖 Groq API key</Text>
-          <Text style={[s.settingArrow, groqKey && { color: '#16a34a' }]}>
+          <Text style={[s.settingArrow, groqKey ? { color: '#16a34a' } : null]}>
             {groqKey ? '✅ Set →' : 'Not set →'}
           </Text>
         </TouchableOpacity>
