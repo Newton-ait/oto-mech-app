@@ -17,9 +17,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          # No cache here — no lockfile exists yet
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm install
 
       - name: Type check
         run: npx tsc --noEmit
@@ -36,16 +37,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm install
 
-      # ── Inject Firebase configs from GitHub Secrets ──
       - name: Write google-services.json
         run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
 
@@ -69,16 +69,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm install
 
-      # ── Inject Firebase configs from GitHub Secrets ──
       - name: Write google-services.json
         run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
 
