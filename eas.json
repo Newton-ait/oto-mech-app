@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 7.0.0"
+    "version": ">= 7.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -13,7 +14,11 @@
     "preview": {
       "distribution": "internal",
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "googleServicesFile": "$GOOGLE_SERVICES_JSON"
+      },
+      "ios": {
+        "googleServicesFile": "$GOOGLE_SERVICE_INFO_PLIST"
       },
       "env": {
         "APP_ENV": "preview"
@@ -22,7 +27,11 @@
     "production": {
       "autoIncrement": true,
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "app-bundle",
+        "googleServicesFile": "$GOOGLE_SERVICES_JSON"
+      },
+      "ios": {
+        "googleServicesFile": "$GOOGLE_SERVICE_INFO_PLIST"
       },
       "env": {
         "APP_ENV": "production"
