@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "OTO-Mech",
+    "slug": "oto-mech",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0d0f14"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.otomech.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "OTO-Mech needs microphone access to record and analyze your car sounds for diagnosis."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ff6b00"
+      },
+      "package": "com.otomech.app",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "OTO-Mech needs microphone access to record and analyze your car sounds."
+        }
+      ]
+    ],
+    "extra": {
+      "supabaseUrl": "https://jaqyrnbfthkxkddegzse.supabase.co",
+      "otoMechApiBase": "https://jaqyrnbfthkxkddegzse.supabase.co/functions/v1/oto-mech",
+      "eas": {
+        "projectId": "dcced985-a248-4a6a-984f-df90e42fc8ea"
+      }
+    }
+  }
+}
