@@ -84,6 +84,9 @@ jobs:
       - name: Write GoogleService-Info.plist
         run: echo '${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}' > GoogleService-Info.plist
 
+      - name: Write Google Play service account key
+        run: echo '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}' > google-play-key.json
+
       - name: Build Android production AAB
         run: eas build --platform android --profile production --non-interactive
         env:
