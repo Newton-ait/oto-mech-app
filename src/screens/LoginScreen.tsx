@@ -7,7 +7,6 @@ import {
   Platform, Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import crashlytics from '@react-native-firebase/crashlytics';
 import { signInWithEmail, signUpWithEmail } from '../services/auth';
 import { useStore } from '../store';
 
@@ -34,7 +33,7 @@ export default function LoginScreen() {
       setLoggedIn(true, email);
       navigation.goBack();
     } catch (err: any) {
-      crashlytics().recordError(err);
+      
       Alert.alert('Error', err.message || 'Authentication failed');
     } finally {
       setLoading(false);
