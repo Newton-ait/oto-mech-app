@@ -14,6 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.otomech.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "OTO-Mech needs microphone access to record and analyze your car sounds for diagnosis."
       }
@@ -24,6 +25,7 @@
         "backgroundColor": "#ff6b00"
       },
       "package": "com.otomech.app",
+      "googleServicesFile": "./google-services.json",
       "permissions": [
         "RECORD_AUDIO",
         "READ_EXTERNAL_STORAGE",
