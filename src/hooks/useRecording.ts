@@ -3,6 +3,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Audio } from 'expo-av';
+import crashlytics from '@react-native-firebase/crashlytics';
 import * as FileSystem from 'expo-file-system';
 import { predict, PredictResult } from '../services/api';
 import { useStore } from '../store';
