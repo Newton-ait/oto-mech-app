@@ -2,7 +2,6 @@
 // Groq LLM chat integration — llama-3.3-70b-versatile
 
 import { useState, useCallback } from 'react';
-import crashlytics from '@react-native-firebase/crashlytics';
 import { useStore, DiagnosisResult } from '../store';
 
 const GROQ_API = 'https://api.groq.com/openai/v1/chat/completions';
@@ -99,7 +98,6 @@ export function useGroqChat() {
       const data = await response.json();
       addMessage('assistant', data.choices[0].message.content);
     } catch (err) {
-      crashlytics().recordError(err as Error);
       addMessage('assistant', getDemoReply(text));
     } finally {
       setIsTyping(false);
