@@ -9,14 +9,28 @@ const SUPABASE_URL = 'https://jaqyrnbfthkxkddegzse.supabase.co';
 // Replace with your actual anon key from Supabase dashboard
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
+if (!SUPABASE_ANON_KEY) {
+  console.warn(
+    '⚠️ EXPO_PUBLIC_SUPABASE_ANON_KEY is missing. Auth and API calls will fail. ' +
+    'Set it in EAS env vars or .env for local dev.'
+  );
+}
+
+// Fallback placeholder prevents createClient from throwing synchronously
+// at import time when the key is missing (which crashes the app on launch
+// before any try/catch can run).
+export const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY || 'placeholder-key-app-will-not-authenticate',
+  {
+    auth: {
+      storage: AsyncStorage,
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+    },
+  }
+);
 
 // ── Anonymous sign-in (no account needed) ────────────────
 export async function signInAnonymously(): Promise<void> {
