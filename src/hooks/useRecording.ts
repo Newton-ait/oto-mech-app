@@ -4,7 +4,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
-import crashlytics from '@react-native-firebase/crashlytics';
 import { predict, PredictResult } from '../services/api';
 import { useStore } from '../store';
 
@@ -104,7 +103,6 @@ export function useRecording() {
       setTimeout(() => stopRecording(), RECORD_DURATION_MS);
       return true;
     } catch (err) {
-      crashlytics().recordError(err as Error);
       setStatus('error');
       return false;
     }
@@ -124,7 +122,6 @@ export function useRecording() {
 
       await processAudio(uri);
     } catch (err) {
-      crashlytics().recordError(err as Error);
       setStatus('error');
     }
   }, []);
