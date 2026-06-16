@@ -37,21 +37,17 @@ jobs:
 
       - run: npm install
 
-      # Use printf to safely write JSON (avoids echo mangling special chars)
-      - name: Write google-services.json
-        run: printf '%s' '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
-
-      - name: Write GoogleService-Info.plist
-        run: printf '%s' '${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}' > GoogleService-Info.plist
-
-      - name: Verify Firebase files
+      # Write via env var to avoid shell interpolation mangling JSON
+      - name: Write Firebase files
+        env:
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          GOOGLE_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
         run: |
-          echo "=== google-services.json ==="
-          cat google-services.json | python3 -m json.tool --no-indent | head -5
-          echo "=== GoogleService-Info.plist (first 3 lines) ==="
-          head -3 GoogleService-Info.plist
+          echo "$GOOGLE_SERVICES" > google-services.json
+          echo "$GOOGLE_PLIST" > GoogleService-Info.plist
+          # Validate JSON is well-formed
+          python3 -c "import json,sys; json.load(open('google-services.json'))" && echo "✅ JSON valid" || echo "❌ JSON malformed"
 
-      # Remove from .gitignore so EAS includes them in upload zip
       - name: Allow Firebase files in EAS upload
         run: |
           sed -i '/google-services.json/d' .gitignore
@@ -81,14 +77,19 @@ jobs:
 
       - run: npm install
 
-      - name: Write google-services.json
-        run: printf '%s' '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
-
-      - name: Write GoogleService-Info.plist
-        run: printf '%s' '${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}' > GoogleService-Info.plist
+      - name: Write Firebase files
+        env:
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          GOOGLE_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+        run: |
+          echo "$GOOGLE_SERVICES" > google-services.json
+          echo "$GOOGLE_PLIST" > GoogleService-Info.plist
+          python3 -c "import json,sys; json.load(open('google-services.json'))" && echo "✅ JSON valid" || echo "❌ JSON malformed"
 
       - name: Write Google Play key
-        run: printf '%s' '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}' > google-play-key.json
+        env:
+          PLAY_KEY: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: echo "$PLAY_KEY" > google-play-key.json
 
       - name: Allow Firebase files in EAS upload
         run: |
