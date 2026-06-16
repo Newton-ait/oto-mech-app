@@ -25,19 +25,14 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-
       - run: npm install
-
-      # Write via env var to avoid shell interpolation mangling JSON
       - name: Write Firebase files
         env:
           GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_JSON }}
@@ -45,38 +40,31 @@ jobs:
         run: |
           echo "$GOOGLE_SERVICES" > google-services.json
           echo "$GOOGLE_PLIST" > GoogleService-Info.plist
-          # Validate JSON is well-formed
           python3 -c "import json,sys; json.load(open('google-services.json'))" && echo "✅ JSON valid" || echo "❌ JSON malformed"
-
       - name: Allow Firebase files in EAS upload
         run: |
           sed -i '/google-services.json/d' .gitignore
           sed -i '/GoogleService-Info.plist/d' .gitignore
-
       - name: Build Android preview APK
         run: eas build --platform android --profile preview --non-interactive
         env:
           EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
 
   build-android-production:
-    name: Build & Deploy Android (Production)
+    name: Build Android (Production AAB)
     runs-on: ubuntu-latest
     needs: lint
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-
       - run: npm install
-
       - name: Write Firebase files
         env:
           GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_JSON }}
@@ -85,33 +73,20 @@ jobs:
           echo "$GOOGLE_SERVICES" > google-services.json
           echo "$GOOGLE_PLIST" > GoogleService-Info.plist
           python3 -c "import json,sys; json.load(open('google-services.json'))" && echo "✅ JSON valid" || echo "❌ JSON malformed"
-
       - name: Write Google Play key
         env:
           PLAY_KEY: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         run: echo "$PLAY_KEY" > google-play-key.json
-
       - name: Allow Firebase files in EAS upload
         run: |
           sed -i '/google-services.json/d' .gitignore
           sed -i '/GoogleService-Info.plist/d' .gitignore
-
       - name: Build Android production AAB
         run: eas build --platform android --profile production --non-interactive
         env:
           EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
-
-      - name: Download AAB artifact
-        run: |
-          BUILD_URL=$(eas build:list --platform android --status finished --limit 1 --json | jq -r '.[0].artifacts.buildUrl')
-          curl -L "$BUILD_URL" -o app-release.aab
-
-      - name: Upload to Google Play Internal Track
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: com.otomech.app
-          releaseFiles: app-release.aab
-          track: internal
-          status: completed
-          releaseName: "OTO-Mech ${{ github.run_number }}"
+      - name: Build complete
+        run: echo "✅ AAB built. Download from https://expo.dev/accounts/newtonait/projects/oto-mech/builds — upload manually to Play Console until app is registered."
+        # Play Store auto-upload is disabled until app is created in Google Play Console.
+        # Once the app is registered at https://play.google.com/console, re-enable by adding:
+        # - uses: r0adkll/upload-google-play@v1 (see git history for config)
