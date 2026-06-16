@@ -1,12 +1,11 @@
 {
   "name": "oto-mech",
   "version": "1.0.0",
-  "main": "expo-router/entry",
+  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios",
-    "lint": "eslint src --ext .ts,.tsx"
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "expo": "~51.0.0",
@@ -25,9 +24,7 @@
     "zustand": "^4.5.0",
     "@supabase/supabase-js": "^2.43.0",
     "react-native-url-polyfill": "^2.0.0",
-    "@react-native-async-storage/async-storage": "1.23.1",
-    "@react-native-firebase/app": "^20.0.0",
-    "@react-native-firebase/crashlytics": "^20.0.0"
+    "@react-native-async-storage/async-storage": "1.23.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
