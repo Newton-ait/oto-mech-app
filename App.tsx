@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 import TabNavigator from './src/navigation/TabNavigator';
 import SplashScreen from './src/screens/SplashScreen';
@@ -22,6 +23,7 @@ export default function App() {
   const { setLoggedIn } = useStore();
 
   useEffect(() => {
+    crashlytics().log('App started');
     initApp();
   }, []);
 
@@ -34,7 +36,7 @@ export default function App() {
         await signInAnonymously();
       }
     } catch (err) {
-      console.warn('Auth init error:', err);
+      crashlytics().recordError(err as Error);
     } finally {
       setIsReady(true);
       setTimeout(() => setShowSplash(false), 1800);
