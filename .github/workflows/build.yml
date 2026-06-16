@@ -7,25 +7,17 @@ on:
     branches: [main]
 
 jobs:
-  # ── Job 1: Lint & type check ──────────────────────────────
   lint:
     name: Lint & Type Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          # No cache here — no lockfile exists yet
+      - run: npm install
+      - run: npx tsc --noEmit
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Type check
-        run: npx tsc --noEmit
-
-  # ── Job 2: Build Android APK (preview) ───────────────────
   build-android-preview:
     name: Build Android (Preview APK)
     runs-on: ubuntu-latest
@@ -43,21 +35,31 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install dependencies
-        run: npm install
+      - run: npm install
 
+      # Write Firebase files — EAS zips the whole working directory
+      # so these files will be present when EAS prebuild runs remotely
       - name: Write google-services.json
-        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo "$GOOGLE_SERVICES_JSON" > google-services.json
 
       - name: Write GoogleService-Info.plist
-        run: echo '${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}' > GoogleService-Info.plist
+        env:
+          GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+        run: echo "$GOOGLE_SERVICE_INFO_PLIST" > GoogleService-Info.plist
+
+      # Temporarily remove from .gitignore so EAS includes them in the upload
+      - name: Allow Firebase files in upload
+        run: |
+          sed -i '/google-services.json/d' .gitignore
+          sed -i '/GoogleService-Info.plist/d' .gitignore
 
       - name: Build Android preview APK
         run: eas build --platform android --profile preview --non-interactive
         env:
           EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
 
-  # ── Job 3: Build + Deploy to Play Store (production) ─────
   build-android-production:
     name: Build & Deploy Android (Production)
     runs-on: ubuntu-latest
@@ -75,17 +77,27 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install dependencies
-        run: npm install
+      - run: npm install
 
       - name: Write google-services.json
-        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo "$GOOGLE_SERVICES_JSON" > google-services.json
 
       - name: Write GoogleService-Info.plist
-        run: echo '${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}' > GoogleService-Info.plist
+        env:
+          GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+        run: echo "$GOOGLE_SERVICE_INFO_PLIST" > GoogleService-Info.plist
 
-      - name: Write Google Play service account key
-        run: echo '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}' > google-play-key.json
+      - name: Write Google Play key
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: echo "$GOOGLE_PLAY_SERVICE_ACCOUNT_JSON" > google-play-key.json
+
+      - name: Allow Firebase files in upload
+        run: |
+          sed -i '/google-services.json/d' .gitignore
+          sed -i '/GoogleService-Info.plist/d' .gitignore
 
       - name: Build Android production AAB
         run: eas build --platform android --profile production --non-interactive
