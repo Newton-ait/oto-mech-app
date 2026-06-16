@@ -1,10 +1,9 @@
-// App.tsx — root entry point
+// App.tsx
 
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import crashlytics from '@react-native-firebase/crashlytics';
 
 import TabNavigator from './src/navigation/TabNavigator';
 import SplashScreen from './src/screens/SplashScreen';
@@ -23,22 +22,19 @@ export default function App() {
   const { setLoggedIn } = useStore();
 
   useEffect(() => {
-    crashlytics().log('App started');
     initApp();
   }, []);
 
   async function initApp() {
     try {
-      // Check existing session
       const session = await getSession();
       if (session) {
         setLoggedIn(!session.user.is_anonymous, session.user.email || undefined);
       } else {
-        // Auto sign in anonymously
         await signInAnonymously();
       }
     } catch (err) {
-      crashlytics().recordError(err as Error);
+      console.warn('Auth init error:', err);
     } finally {
       setIsReady(true);
       setTimeout(() => setShowSplash(false), 1800);
@@ -55,16 +51,8 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={TabNavigator} />
         <Stack.Screen name="Results" component={ResultsScreen} />
-        <Stack.Screen
-          name="Chat"
-          component={ChatScreen}
-          options={{ presentation: 'card' }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ presentation: 'modal' }}
-        />
+        <Stack.Screen name="Chat" component={ChatScreen} options={{ presentation: 'card' }} />
+        <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
